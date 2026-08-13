@@ -346,10 +346,38 @@ def collect_all_tenders(input_path: str = "data/tenderbazar/product.json", outpu
 	with open(output_path, "w", encoding="utf-8") as f:
 		json.dump(updated_results, f, ensure_ascii=False, indent=2)
 
+	# prepare summary and changed entries
+	changed_entries = []
+	for name, pro, lval in pairs:
+		key = pro or name
+		prev = existing.get(key, {})
+		prev_tenders = list(prev.get("tenders", [])) if isinstance(prev.get("tenders", []), list) else []
+		# compute new ids that were added
+		# find merged entry in updated_results
+		merged = None
+		for it in updated_results:
+			if (it.get("pro") or it.get("name")) == key:
+				merged = it
+				break
+		merged_tenders = merged.get("tenders", []) if merged else []
+		new_ids = [tid for tid in merged_tenders if tid not in prev_tenders]
+		if new_ids:
+			changed_entries.append({"name": name, "pro": pro, "new_ids": new_ids})
+
+	summary = {
+		"total_products_checked": len(pairs),
+		"products_with_new_tenders": changed_products,
+		"total_new_tender_ids": total_new,
+		"changed_entries": changed_entries,
+		"output_path": output_path,
+	}
+
 	# print concise summary
-	print(f"Total products checked: {len(pairs)}")
-	print(f"Products with new tenders: {changed_products}")
-	print(f"Total new tender IDs added: {total_new}")
+	print(f"Total products checked: {summary['total_products_checked']}")
+	print(f"Products with new tenders: {summary['products_with_new_tenders']}")
+	print(f"Total new tender IDs added: {summary['total_new_tender_ids']}")
+
+	return summary
 
 
 def _cli(argv: list[str] | None = None) -> int:

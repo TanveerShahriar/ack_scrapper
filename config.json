@@ -9,9 +9,6 @@
   "notifications": {
     "email": {
       "enabled": true
-    },
-    "telegram": {
-      "enabled": true
     }
   }
 }
