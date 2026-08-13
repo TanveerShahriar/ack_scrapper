@@ -285,24 +285,71 @@ def collect_all_tenders(input_path: str = "data/tenderbazar/product.json", outpu
 	Output format: list of objects {"name": ..., "pro": ..., "L": ..., "tenders": [ids...]}
 	"""
 	pairs = get_codes_for_names(input_path)
-	results = []
+
+	import os, json
+
+	# load existing output if present
+	existing = {}
+	if os.path.exists(output_path):
+		try:
+			with open(output_path, "r", encoding="utf-8") as f:
+				old = json.load(f)
+			# index by pro if available, else by name
+			for item in old:
+				key = item.get("pro") or item.get("name")
+				existing[key] = item
+		except Exception:
+			existing = {}
+
+	updated_results = []
+	total_new = 0
+	changed_products = 0
+
 	for name, pro, lval in pairs:
-		entry = {"name": name, "pro": pro, "L": lval, "tenders": []}
+		key = pro or name
+		prev = existing.get(key, {})
+		prev_tenders = list(prev.get("tenders", [])) if isinstance(prev.get("tenders", []), list) else []
+
+		# fetch current tenders
+		ids = []
 		if pro:
 			try:
 				ids = fetch_tender_ids_for_pro(pro, lval=lval)
-				entry["tenders"] = ids
 			except Exception:
-				entry["tenders"] = []
-		results.append(entry)
+				ids = []
 
-	# ensure directory exists
-	import os, json
+		# determine new ids not already in prev_tenders
+		prev_set = set(prev_tenders)
+		new_ids = [tid for tid in ids if tid not in prev_set]
+
+		if new_ids:
+			# append new ids to existing list
+			merged = prev_tenders + new_ids
+			total_new += len(new_ids)
+			changed_products += 1
+		else:
+			merged = prev_tenders
+
+		entry = {"name": name, "pro": pro, "L": lval, "tenders": merged}
+		updated_results.append(entry)
+
+	# also keep any existing entries that were not present in current pairs
+	processed_keys = {item.get("pro") or item.get("name") for item in updated_results}
+	for key, item in existing.items():
+		if key not in processed_keys:
+			updated_results.append(item)
+
+	# ensure directory exists and write back
 	outdir = os.path.dirname(output_path)
 	if outdir and not os.path.exists(outdir):
 		os.makedirs(outdir, exist_ok=True)
 	with open(output_path, "w", encoding="utf-8") as f:
-		json.dump(results, f, ensure_ascii=False, indent=2)
+		json.dump(updated_results, f, ensure_ascii=False, indent=2)
+
+	# print concise summary
+	print(f"Total products checked: {len(pairs)}")
+	print(f"Products with new tenders: {changed_products}")
+	print(f"Total new tender IDs added: {total_new}")
 
 
 def _cli(argv: list[str] | None = None) -> int:
