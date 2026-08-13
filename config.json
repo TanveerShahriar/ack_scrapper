@@ -1,0 +1,17 @@
+{
+  "scrapers": {
+    "tenderbazar": {
+      "enabled": true,
+      "interval_minutes": 30,
+      "delay_between_requests": 1
+    }
+  },
+  "notifications": {
+    "email": {
+      "enabled": true
+    },
+    "telegram": {
+      "enabled": true
+    }
+  }
+}
