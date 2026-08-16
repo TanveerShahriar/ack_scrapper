@@ -149,3 +149,48 @@ def send_update_notifications(summary: dict, recipients: List[str] | None = None
         import traceback
         traceback.print_exc()
         return False
+
+
+def send_bbtender_notifications(tenders: List[dict], recipients: List[str] | None = None) -> bool:
+    """Send email for newly added Bangladesh Bank tenders with their PDF links."""
+    if not tenders:
+        return False
+
+    if recipients is None:
+        recipients = _load_recipients()
+    if not recipients:
+        return False
+
+    cfg = _smtp_config_from_env()
+    subject = f"Bangladesh Bank tender update: {len(tenders)} new tender(s)"
+
+    lines = [
+        "New Bangladesh Bank tender(s) detected:",
+        "",
+    ]
+    for tender in tenders:
+        title = tender.get("title") or "Untitled tender"
+        published = tender.get("published_date") or "-"
+        closing = tender.get("closing_date") or "-"
+        pdf_url = tender.get("pdf_url") or "-"
+        lines.append(f"- {title}")
+        lines.append(f"  Published: {published}")
+        lines.append(f"  Closing: {closing}")
+        lines.append(f"  PDF: {pdf_url}")
+        lines.append("")
+
+    body = "\n".join(lines)
+    msg = _build_message(cfg["from"], recipients, subject, body)
+
+    try:
+        with smtplib.SMTP(cfg["host"], cfg["port"]) as s:
+            s.ehlo()
+            if cfg.get("user") and cfg.get("pass"):
+                s.starttls()
+                s.login(cfg["user"], cfg["pass"])
+            s.send_message(msg)
+        return True
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        return False

@@ -1,3 +1,3 @@
 """Scrapers package initializer."""
 
-__all__ = ["tenderbazar"]
+__all__ = ["tenderbazar", "bbtender"]
