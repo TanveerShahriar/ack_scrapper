@@ -163,6 +163,17 @@ def sync_tenders(path: str = "data/bbtender/tender.json", send_email: bool = Tru
         except Exception:
             print("Bangladesh Bank email notification failed; continuing with saved data.")
 
+        try:
+            from notifications.telegram import send_bbtender_notifications as send_bbtender_telegram_notifications
+
+            sent = send_bbtender_telegram_notifications(new_tenders)
+            if sent:
+                print(f"Telegram sent for {len(new_tenders)} new Bangladesh Bank tender(s).")
+            else:
+                print("No Bangladesh Bank Telegram sent because no bot token/chat IDs were configured.")
+        except Exception:
+            print("Bangladesh Bank Telegram notification failed; continuing with saved data.")
+
     print(f"Saved tenders: {len(latest_tenders)} total")
     if new_tenders:
         print(f"New Bangladesh Bank tender(s): {len(new_tenders)}")

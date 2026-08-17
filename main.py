@@ -24,6 +24,16 @@ def main():
 	except Exception:
 		print("Notifier failed or missing; skipping email send.")
 
+	try:
+		from notifications import telegram as notifier
+		sent = notifier.send_update_notifications(summary)
+		if sent:
+			print("Telegram notification sent to users.")
+		else:
+			print("No Telegram notification sent (no updates or no chat IDs configured).")
+	except Exception:
+		print("Telegram notifier failed or missing; skipping Telegram send.")
+
 
 if __name__ == "__main__":
 	main()
