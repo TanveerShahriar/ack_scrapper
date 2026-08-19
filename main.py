@@ -1,12 +1,23 @@
 """Main entry point for project scrapers."""
 
-from scrapers import bbtender, tenderbazar
+from scrapers import bbtender, bdtender_financial_service, tenderbazar
 
 
 def main():
 	print("Running Bangladesh Bank tender sync...")
 	summary = bbtender.sync_tenders(path="data/bbtender/tender.json", send_email=True)
 	print(f"Bangladesh Bank sync status: updated={summary['updated']}, new={summary['new_count']}")
+
+
+
+	print("Running BDTender financial service sync...")
+	summary = bdtender_financial_service.sync_tenders(
+		path="data/bdtender_financial_service/tender.json",
+		send_notifications=True,
+	)
+	print(f"BDTender financial service sync status: updated={summary['updated']}, new={summary['new_count']}")
+
+
 
 	# Existing TenderBazar flow can be enabled here when needed
 	input_path = "data/tenderbazar/product.json"

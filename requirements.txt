@@ -1,2 +1,4 @@
 requests
 beautifulsoup4
+playwright
+# python -m playwright install chromium
