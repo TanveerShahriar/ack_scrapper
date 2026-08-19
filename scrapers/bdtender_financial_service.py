@@ -182,8 +182,16 @@ def sync_tenders(path: str = DATA_PATH, send_notifications: bool = True) -> dict
     }
 
 
+def run() -> dict[str, Any]:
+    """Run the financial-service scraper with its default storage and notifications."""
+    return sync_tenders(
+        path=DATA_PATH,
+        send_notifications=True,
+    )
+
+
 def main() -> None:
-    sync_tenders()
+    run()
 
 
 if __name__ == "__main__":

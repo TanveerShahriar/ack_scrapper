@@ -380,6 +380,38 @@ def collect_all_tenders(input_path: str = "data/tenderbazar/product.json", outpu
 	return summary
 
 
+def run(
+	input_path: str = "data/tenderbazar/product.json",
+	output_path: str = "data/tenderbazar/tenders.json",
+) -> dict:
+	"""Collect TenderBazar tenders and send configured notifications."""
+	summary = collect_all_tenders(input_path=input_path, output_path=output_path)
+
+	try:
+		from notifications import email as notifier
+
+		sent = notifier.send_update_notifications(summary)
+		if sent:
+			print("Notification email sent to users.")
+		else:
+			print("No notification sent (no updates or no recipients configured).")
+	except Exception:
+		print("Notifier failed or missing; skipping email send.")
+
+	try:
+		from notifications import telegram as notifier
+
+		sent = notifier.send_update_notifications(summary)
+		if sent:
+			print("Telegram notification sent to users.")
+		else:
+			print("No Telegram notification sent (no updates or no chat IDs configured).")
+	except Exception:
+		print("Telegram notifier failed or missing; skipping Telegram send.")
+
+	return summary
+
+
 def _cli(argv: list[str] | None = None) -> int:
 	p = argparse.ArgumentParser(description="Fetch TenderBazar products page and print the result")
 	p.add_argument("--out", "-o", help="Write raw response bytes to file")

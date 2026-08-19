@@ -1,49 +1,10 @@
 """Main entry point for project scrapers."""
 
-from scrapers import bbtender, bdtender_financial_service, tenderbazar
+from scrapers.runner import run_all
 
 
 def main():
-	print("Running Bangladesh Bank tender sync...")
-	summary = bbtender.sync_tenders(path="data/bbtender/tender.json", send_email=True)
-	print(f"Bangladesh Bank sync status: updated={summary['updated']}, new={summary['new_count']}")
-
-
-
-	print("Running BDTender financial service sync...")
-	summary = bdtender_financial_service.sync_tenders(
-		path="data/bdtender_financial_service/tender.json",
-		send_notifications=True,
-	)
-	print(f"BDTender financial service sync status: updated={summary['updated']}, new={summary['new_count']}")
-
-
-
-	# Existing TenderBazar flow can be enabled here when needed
-	input_path = "data/tenderbazar/product.json"
-	output_path = "data/tenderbazar/tenders.json"
-	summary = tenderbazar.collect_all_tenders(input_path=input_path, output_path=output_path)
-
-	# send notifications if there are updates
-	try:
-		from notifications import email as notifier
-		sent = notifier.send_update_notifications(summary)
-		if sent:
-			print("Notification email sent to users.")
-		else:
-			print("No notification sent (no updates or no recipients configured).")
-	except Exception:
-		print("Notifier failed or missing; skipping email send.")
-
-	try:
-		from notifications import telegram as notifier
-		sent = notifier.send_update_notifications(summary)
-		if sent:
-			print("Telegram notification sent to users.")
-		else:
-			print("No Telegram notification sent (no updates or no chat IDs configured).")
-	except Exception:
-		print("Telegram notifier failed or missing; skipping Telegram send.")
+	run_all()
 
 
 if __name__ == "__main__":

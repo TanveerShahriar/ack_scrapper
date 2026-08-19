@@ -210,8 +210,13 @@ def print_tenders() -> list[dict[str, str]]:
     return tenders
 
 
+def run() -> dict[str, Any]:
+    """Run the Bangladesh Bank scraper with its default storage and notifications."""
+    return sync_tenders(path="data/bbtender/tender.json", send_email=True)
+
+
 def main() -> None:
-    sync_tenders()
+    run()
 
 
 if __name__ == "__main__":
