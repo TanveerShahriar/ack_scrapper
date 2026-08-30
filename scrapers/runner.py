@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from scrapers import bbtender, bdtender_financial_service, tenderbazar
+from scrapers import bbtender, bdtender_financial_service, petrobangla, tenderbazar
 
 
 def run_all() -> dict[str, Any]:
@@ -23,11 +23,19 @@ def run_all() -> dict[str, Any]:
         f"new={financial_service['new_count']}"
     )
 
+    print("Running Petrobangla sync...")
+    petrobangla_sync = petrobangla.run()
+    print(
+        f"Petrobangla sync status: updated={petrobangla_sync['updated']}, "
+        f"new={petrobangla_sync['new_count']}"
+    )
+
     print("Running TenderBazar sync...")
     tender_bazar = tenderbazar.run()
 
     return {
         "bbtender": bangladesh_bank,
         "bdtender_financial_service": financial_service,
+        "petrobangla": petrobangla_sync,
         "tenderbazar": tender_bazar,
     }

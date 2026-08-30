@@ -210,9 +210,9 @@ def send_bbtender_notifications(tenders: List[dict], chat_ids: List[str] | None 
         return False
 
     lines = [
-        f"Bangladesh Bank tender update: {len(tenders)} new tender(s)",
+        f"Tender update: {len(tenders)} new tender(s)",
         "",
-        "New Bangladesh Bank tender(s) detected:",
+        "New tender(s) detected:",
         "",
     ]
 

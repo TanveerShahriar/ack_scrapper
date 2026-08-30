@@ -162,10 +162,10 @@ def send_bbtender_notifications(tenders: List[dict], recipients: List[str] | Non
         return False
 
     cfg = _smtp_config_from_env()
-    subject = f"Bangladesh Bank tender update: {len(tenders)} new tender(s)"
+    subject = f"Tender update: {len(tenders)} new tender(s)"
 
     lines = [
-        "New Bangladesh Bank tender(s) detected:",
+        "New tender(s) detected:",
         "",
     ]
     for tender in tenders:
