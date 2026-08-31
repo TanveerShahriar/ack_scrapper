@@ -12,7 +12,7 @@ from bs4 import BeautifulSoup
 
 requests.packages.urllib3.disable_warnings()  # type: ignore[attr-defined]
 
-TENDER_URL = "https://petrobangla.org.bd/pages/tenders?page=1&page_size=100"
+TENDER_URL = "https://petrobangla.org.bd/pages/tenders?page=1&page_size=100&search=audit"
 DATA_PATH = "data/petrobangla/tender.json"
 
 
