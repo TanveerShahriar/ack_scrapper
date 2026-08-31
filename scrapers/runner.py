@@ -9,36 +9,32 @@ from scrapers import GTCL, bbtender, bdtender_financial_service, petrobangla, te
 
 def run_all() -> dict[str, Any]:
     """Run every scraper using its own defaults and notification handling."""
-    print("Running Bangladesh Bank tender sync...")
-    bangladesh_bank = bbtender.run()
-    print(
-        f"Bangladesh Bank sync status: updated={bangladesh_bank['updated']}, "
-        f"new={bangladesh_bank['new_count']}"
-    )
 
-    print("Running BDTender financial service sync...")
-    financial_service = bdtender_financial_service.run()
-    print(
-        f"BDTender financial service sync status: updated={financial_service['updated']}, "
-        f"new={financial_service['new_count']}"
-    )
+    def safe_run(name: str, func):
+        try:
+            print(f"Running {name} sync...")
+            result = func()
+            print(
+                f"{name} sync status: updated={result.get('updated', False)}, "
+                f"new={result.get('new_count', 0)}"
+            )
+            return result
+        except Exception as exc:
+            print(f"{name} sync failed: {exc}")
+            return {
+                "updated": False,
+                "saved_path": "",
+                "total_loaded": 0,
+                "new_count": 0,
+                "new_tenders": [],
+                "error": str(exc),
+            }
 
-    print("Running Petrobangla sync...")
-    petrobangla_sync = petrobangla.run()
-    print(
-        f"Petrobangla sync status: updated={petrobangla_sync['updated']}, "
-        f"new={petrobangla_sync['new_count']}"
-    )
-
-    print("Running GTCL sync...")
-    gtcl_sync = GTCL.run()
-    print(
-        f"GTCL sync status: updated={gtcl_sync['updated']}, "
-        f"new={gtcl_sync['new_count']}"
-    )
-
-    print("Running TenderBazar sync...")
-    tender_bazar = tenderbazar.run()
+    bangladesh_bank = safe_run("Bangladesh Bank", bbtender.run)
+    financial_service = safe_run("BDTender financial service", bdtender_financial_service.run)
+    petrobangla_sync = safe_run("Petrobangla", petrobangla.run)
+    gtcl_sync = safe_run("GTCL", GTCL.run)
+    tender_bazar = safe_run("TenderBazar", tenderbazar.run)
 
     return {
         "bbtender": bangladesh_bank,
