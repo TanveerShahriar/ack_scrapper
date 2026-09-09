@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from scrapers import GTCL, bbtender, bdtender_financial_service, petrobangla, tenderbazar
+from scrapers import GTCL, bbtender, bdtender_financial_service, eprocure, petrobangla, tenderbazar
 
 
 def run_all() -> dict[str, Any]:
@@ -32,6 +32,7 @@ def run_all() -> dict[str, Any]:
 
     bangladesh_bank = safe_run("Bangladesh Bank", bbtender.run)
     financial_service = safe_run("BDTender financial service", bdtender_financial_service.run)
+    eprocure_sync = safe_run("eProcure", eprocure.run)
     petrobangla_sync = safe_run("Petrobangla", petrobangla.run)
     gtcl_sync = safe_run("GTCL", GTCL.run)
     tender_bazar = safe_run("TenderBazar", tenderbazar.run)
@@ -39,6 +40,7 @@ def run_all() -> dict[str, Any]:
     return {
         "bbtender": bangladesh_bank,
         "bdtender_financial_service": financial_service,
+        "eprocure": eprocure_sync,
         "petrobangla": petrobangla_sync,
         "gtcl": gtcl_sync,
         "tenderbazar": tender_bazar,
