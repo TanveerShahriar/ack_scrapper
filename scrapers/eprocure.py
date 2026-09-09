@@ -8,42 +8,67 @@ url = "https://www.eprocure.gov.bd/TenderDetailsServlet"
 all_rows = []
 
 size = 200
-page = 1
 
-while True:
-    payload = {
-        "funName": "AllTenders",
-        "keyword": "audit ",
-        "pageNo": str(page),
-        "size": str(size),
-        "homeWSearch": "homeWSearch",
-        "approve": "false",
-        "h": "t",
-    }
+# Search both separately
+keywords = ["audit ", "auditor ", "accountant ", "auditing "]
 
-    response = session.post(url, data=payload)
-    response.raise_for_status()
+for keyword in keywords:
 
-    soup = BeautifulSoup(response.text, "html.parser")
+    page = 1
 
-    rows = soup.find_all("tr")
-    print(rows[-1])
+    while True:
+        payload = {
+            "funName": "AllTenders",
+            "keyword": keyword,
+            "pageNo": str(page),
+            "size": str(size),
+            "homeWSearch": "homeWSearch",
+            "approve": "false",
+            "h": "t",
+        }
+
+        response = session.post(url, data=payload)
+        response.raise_for_status()
+
+        soup = BeautifulSoup(response.text, "html.parser")
+
+        rows = soup.find_all("tr")
+
+        print(f'Searching "{keyword}" - Page {page}: {len(rows)} rows')
+
+        for row in rows:
+            all_rows.append(row)
+
+        page += 1
+
+        # No more pages
+        if len(rows) < size:
+            break
 
 
-    print(f"Page {page}: {len(rows)} rows")
+# -----------------------------------------
+# Remove duplicates
+# -----------------------------------------
 
-    for row in rows:
-        cells = [
-            cell.get_text(" ", strip=True)
-            for cell in row.find_all("td")
-        ]
+unique_rows = []
+seen = set()
 
-        if cells:
-            all_rows.append(cells)
+for row in all_rows:
 
-    page += 1
+    row_key = tuple(row)
 
-    if len(rows) < size:
-        break
+    if row_key not in seen:
+        seen.add(row_key)
+        unique_rows.append(row)
 
-print("Total rows:", len(all_rows))
+
+print("\nTotal rows found:", len(all_rows))
+print("Total unique rows:", len(unique_rows))
+
+
+# -----------------------------------------
+# Print results
+# -----------------------------------------
+
+# for row in unique_rows:
+print(unique_rows[-1])  # Print last 9 columns of each row
