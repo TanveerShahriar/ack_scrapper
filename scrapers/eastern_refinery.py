@@ -1,4 +1,4 @@
-"""GTCL tender crawler configuration."""
+"""Eastern Refinery tender crawler configuration."""
 
 from __future__ import annotations
 import os
