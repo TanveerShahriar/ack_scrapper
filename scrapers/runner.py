@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from scrapers import BGDCL, GTCL, KGDCL, PGCL, bbtender, bdtender_financial_service, eprocure, jalalabad_gas, lp_gas, meghna_petrolium, padma_oil, jamuna_oil, eastern_refinery, petrobangla, tenderbazar
+from scrapers import BGDCL, GTCL, KGDCL, PGCL, SGCL, bbtender, bdtender_financial_service, eprocure, jalalabad_gas, lp_gas, meghna_petrolium, padma_oil, jamuna_oil, eastern_refinery, petrobangla, tenderbazar
 
 
 def run_all() -> dict[str, Any]:
@@ -41,9 +41,10 @@ def run_all() -> dict[str, Any]:
     eastern_refinery_sync = safe_run("Eastern Refinery", eastern_refinery.run)
     lp_gas_sync = safe_run("LP Gas", lp_gas.run)
     bgdcl_sync = safe_run("BGDCL", BGDCL.run)
-    kgdcl_sync = safe_run("KGDCL", KGDCL.run)
     jalalabad_gas_sync = safe_run("Jalalabad Gas", jalalabad_gas.run)
     pgcl_sync = safe_run("PGCL", PGCL.run)
+    kgdcl_sync = safe_run("KGDCL", KGDCL.run)
+    sgcl_sync = safe_run("SGCL", SGCL.run)
     tender_bazar = safe_run("TenderBazar", tenderbazar.run)
 
     return {
@@ -61,5 +62,6 @@ def run_all() -> dict[str, Any]:
         "jalalabad_gas": jalalabad_gas_sync,
         "pgcl": pgcl_sync,
         "kgdcl": kgdcl_sync,
+        "sgcl": sgcl_sync,
         "tenderbazar": tender_bazar,
     }
