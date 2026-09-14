@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from scrapers import BCMCL, BGDCL, GTCL, KGDCL, PGCL, RPGCL, SGCL, bbtender, bdtender_financial_service, eprocure, jalalabad_gas, lp_gas, meghna_petrolium, padma_oil, jamuna_oil, eastern_refinery, petrobangla, tenderbazar
+from scrapers import BCMCL, BGDCL, GTCL, KGDCL, MGMCL, PGCL, RPGCL, SGCL, bbtender, bdtender_financial_service, eprocure, jalalabad_gas, lp_gas, meghna_petrolium, padma_oil, jamuna_oil, eastern_refinery, petrobangla, tenderbazar
 
 
 def run_all() -> dict[str, Any]:
@@ -47,6 +47,7 @@ def run_all() -> dict[str, Any]:
     sgcl_sync = safe_run("SGCL", SGCL.run)
     rpgcl_sync = safe_run("RPGCL", RPGCL.run)
     bcmcl_sync = safe_run("BCMCL", BCMCL.run)
+    mgmcl_sync = safe_run("MGMCL", MGMCL.run)
     tender_bazar = safe_run("TenderBazar", tenderbazar.run)
 
     return {
@@ -67,5 +68,6 @@ def run_all() -> dict[str, Any]:
         "sgcl": sgcl_sync,
         "rpgcl": rpgcl_sync,
         "bcmcl": bcmcl_sync,
+        "mgmcl": mgmcl_sync,
         "tenderbazar": tender_bazar,
     }
